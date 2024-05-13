@@ -4,35 +4,41 @@ import dotenv from "dotenv";
 import HttpError from "../helpers/HttpError.js";
 import bcrypt from "bcrypt";
 import gravatar from "gravatar";
-import { promises as fs } from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-import Jimp from "jimp";
+import { v2 as cloudinary } from "cloudinary";
 import { sendEmail } from "../helpers/sendEmail.js";
 import { v4 } from "uuid";
 
 dotenv.config();
 
-const { SECRET_KEY, MAILTRAP_USER, MAILTRAP_HOST } = process.env;
+const { ACCESS_SECRET_KEY, REFRESH_SECRET_KEY, MAILTRAP_USER, MAILTRAP_HOST } =
+  process.env;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const avatarsPath = path.join(__dirname, "../", "public", "avatars");
-
-export const register = async (req, res, next) => {
+export const signUp = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+
+    const atIndex = email.indexOf("@");
+    const name = email.substring(0, atIndex);
+
     const user = await User.findOne({ email });
 
     if (user) throw HttpError(409, "Email already in use");
 
     const hashPassword = await bcrypt.hash(password, 10);
-    const avatarURL = gravatar.url(email);
+    const avatarURL = gravatar.url(email, { protocol: "https" });
+
+    let cloudinaryAvatarURL;
+    const cloudinaryResponse = await cloudinary.uploader.upload(avatarURL);
+    cloudinaryAvatarURL = cloudinaryResponse.secure_url;
+
     const verificationToken = v4();
+    const dailyWaterNorma = 1.5;
     const newUser = await User.create({
-      ...req.body,
+      name: name,
+      email: email,
       password: hashPassword,
-      avatarURL,
+      avatarURL: cloudinaryAvatarURL,
+      dailyWaterNorma,
       verificationToken,
     });
     const verifyEmail = {
@@ -45,8 +51,152 @@ export const register = async (req, res, next) => {
 
     res.status(201).json({
       email: newUser.email,
-      subscription: newUser.subscription,
+      water: dailyWaterNorma,
+      avatarURL: cloudinaryAvatarURL,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const signIn = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) throw HttpError(401, "Email or password is wrong");
+
+    const passwordCompare = await bcrypt.compare(password, user.password);
+    if (!passwordCompare) throw HttpError(401, "Email or password is wrong");
+
+    const payload = {
+      id: user._id,
+      dailyWaterNorma: user.dailyWaterNorma,
+    };
+    const accessToken = jwt.sign(payload, ACCESS_SECRET_KEY, {
+      expiresIn: "7d",
+    });
+    const refreshToken = jwt.sign(payload, REFRESH_SECRET_KEY, {
+      expiresIn: "10d",
+    });
+
+    await User.findOneAndUpdate(user._id, { accessToken, refreshToken });
+
+    res.json({
+      name: user.name,
+      email: user.email,
+      avatar: user.avatarURL,
+      water: user.dailyWaterNorma,
+      accessToken,
+      refreshToken,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const refresh = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    const { _id } = jwt.verify(refreshToken, REFRESH_SECRET_KEY);
+    const user = await User.findOne({ refreshToken });
+
+    if (!user) {
+      throw HttpError(403, "Token invalid");
+    }
+
+    const payload = { _id };
+    const accessToken = jwt.sign(payload, ACCESS_SECRET_KEY, {
+      expiresIn: "7d",
+    });
+    const newRefreshToken = jwt.sign(payload, REFRESH_SECRET_KEY, {
+      expiresIn: "10d",
+    });
+
+    await User.findByIdAndUpdate(user._id, {
+      accessToken,
+      refreshToken: newRefreshToken,
+    });
+
+    res.json({ accessToken, refreshToken: newRefreshToken });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const signOut = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    const user = await User.findOneAndUpdate(_id, {
+      accessToken: "",
+      refreshToken: "",
+    });
+    if (!user) throw HttpError(401);
+
+    throw HttpError(204);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const current = async (req, res, next) => {
+  try {
+    const { email } = req.user;
+    const user = await User.findOne({ email });
+    if (!user) throw HttpError(401);
+    res.json({
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAvatar = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      throw HttpError(401, "Not authorized");
+    }
+    const { _id } = req.user;
+    const result = await cloudinary.uploader.upload(req.file.path);
+    const avatarURL = result.secure_url;
+    await User.findByIdAndUpdate(_id, { avatarURL });
+
+    res.json({
+      avatarURL,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUserInfo = async (req, res, next) => {
+  try {
+    const { user } = req;
+    const {
+      name,
+      email,
+      gender,
+      weight,
+      activeSportTime,
+      dailyWaterNorma,
+      avatarURL,
+    } = req.body;
+
+    const updatedFields = {
+      name: name || user.name,
+      email: email || user.email,
+      gender: gender || user.gender,
+      weight: weight || user.weight,
+      activeSportTime: activeSportTime || user.activeSportTime,
+      dailyWaterNorma: dailyWaterNorma || user.dailyWaterNorma,
+      avatarURL: avatarURL || user.avatarURL,
+    };
+
+    const updatedUser = await User.findByIdAndUpdate(user._id, updatedFields, {
+      new: true,
+    });
+
+    res.json(updatedUser);
   } catch (error) {
     next(error);
   }
@@ -93,107 +243,6 @@ export const resendVerifyEmail = async (req, res, next) => {
     await sendEmail(verifyEmail);
     res.json({
       message: "Verify email send success",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const login = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-
-    if (!user) throw HttpError(401, "Email or password is wrong");
-
-    const passwordCompare = await bcrypt.compare(password, user.password);
-    if (!passwordCompare) throw HttpError(401, "Email or password is wrong");
-
-    const payload = { id: user._id };
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "10d" });
-    await User.findOneAndUpdate(user._id, { token });
-
-    res.json({
-      token,
-      email: user.email,
-      subscription: user.subscription,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const logout = async (req, res, next) => {
-  try {
-    const { _id } = req.user;
-    const user = await User.findOneAndUpdate(_id, { token: "" });
-    if (!user) throw HttpError(401);
-
-    throw HttpError(204);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const current = async (req, res, next) => {
-  try {
-    const { email, subscription } = req.user;
-
-    const user = await User.findOne({ email });
-    if (!user) throw HttpError(401);
-
-    res.json({
-      email,
-      subscription,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-export const updateSubscription = async (req, res, next) => {
-  try {
-    const { subscription } = req.body;
-    const { _id: userId } = req.user;
-    const validSubscriptions = ["starter", "pro", "business"];
-
-    if (!validSubscriptions.includes(subscription)) {
-      throw HttpError(400, "Invalid subscription type");
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { subscription },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      throw HttpError(404, "User not found");
-    }
-
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    next(error);
-  }
-};
-export const updateAvatar = async (req, res, next) => {
-  try {
-    if (!req.user) {
-      throw HttpError(401, "Not authorized");
-    }
-    const { _id } = req.user;
-    const { path: tempUpload, originalname } = req.file;
-    const fileName = `${_id}_${originalname}`;
-    const resultUpload = path.join(avatarsPath, fileName);
-
-    await fs.rename(tempUpload, resultUpload);
-
-    const image = await Jimp.read(resultUpload);
-    await image.resize(250, 250).writeAsync(resultUpload);
-
-    const avatarURL = path.join("avatars", fileName);
-    await User.findByIdAndUpdate(_id, { avatarURL });
-    res.json({
-      avatarURL,
     });
   } catch (error) {
     next(error);

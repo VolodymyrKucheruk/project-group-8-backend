@@ -1,6 +1,5 @@
 import { model, Schema } from "mongoose";
 
-
 const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const userSchema = new Schema(
@@ -15,27 +14,45 @@ const userSchema = new Schema(
       required: [true, "Email is required"],
       unique: true,
     },
-    subscription: {
+    name: {
       type: String,
-      enum: ["starter", "pro", "business"],
-      default: "starter",
+      required: false,
     },
-    token: {
-      type: String,
+    dailyWaterNorma: {
+      type: Number,
       default: null,
+    },
+    weight: {
+      type: Number,
+      required: false,
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female"],
+      required: false,
+    },
+    activeSportTime: {
+      type: Number,
+      required: false,
     },
     avatarURL: {
       type: String,
       required: true,
     },
-     verify: {
+    accessToken: {
+      type: String,
+    },
+    refreshToken: {
+      type: String,
+    },
+    verify: {
       type: Boolean,
       default: false,
     },
     verificationToken: {
       type: String,
-      required: [true, 'Verify token is required'],
-    }
+      required: [true, "Verify token is required"],
+    },
   },
 
   { versionKey: false, timestamps: true }
