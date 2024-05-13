@@ -1,7 +1,6 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import contactsRouter from "./routes/contactsRouter.js";
 import dotenv from "dotenv";
 import { router } from "./routes/auth.js";
 import swaggerUi from "swagger-ui-express";
@@ -17,7 +16,6 @@ app.use(express.json());
 app.use(express.static("public"));
 
 app.use("/api/users", router);
-app.use("/api/contacts", contactsRouter);
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((_, res) => {
