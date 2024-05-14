@@ -5,7 +5,9 @@ import waterRouter from "./routes/waterRouter.js";
 import dotenv from "dotenv";
 import { router } from "./routes/auth.js";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./swagger.json" assert { type: "json" };
+import fs from "fs";
+
+const swaggerDocument = JSON.parse(fs.readFileSync("./swagger.json", "utf-8"));
 
 dotenv.config();
 
@@ -16,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 app.use("/api/users", router);
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/waters", waterRouter);
 
 app.use((_, res) => {
