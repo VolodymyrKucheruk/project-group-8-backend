@@ -9,6 +9,9 @@
       "url": "https://opensource.org/licenses/MIT"
     }
   },
+  "consumers": ["application/json", "multipart/form-data"],
+  "produces": ["application/json"],
+
   "servers": [
     {
       "url": "https://project-group-8-backend.onrender.com",
