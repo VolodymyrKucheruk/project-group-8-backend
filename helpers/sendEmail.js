@@ -12,10 +12,6 @@ const email = {
     user: "431b14cc250a3e",
     pass: MAILTRAP_PASSWORD,
   },
-  // auth: {
-  //   user: "330d7d4216cee7",
-  //   pass: "0eef049e235ae0",
-  // },
 };
 const transport = nodemailer.createTransport(email);
 
