@@ -19,7 +19,9 @@ import {
   resendVerifyEmail,
   refresh,
   updateUserInfo,
+  googleAuth,
 } from "../controllers/usersControllers.js";
+import passport from "../helpers/google-authenticate.js";
 
 export const router = express.Router();
 
@@ -31,5 +33,17 @@ router.post("/signIn", validateBody(signInSchema), signIn);
 router.post("/signOut", authenticate, signOut);
 router.patch("/avatars", authenticate, upload.single("avatar"), updateAvatar);
 router.post("/refresh", validateBody(refreshSchema), refresh);
-router.patch("/update", authenticate, validateBody(updateUserInfoSchema), updateUserInfo);
-
+router.patch(
+  "/update",
+  authenticate,
+  validateBody(updateUserInfoSchema),
+  updateUserInfo
+);
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["email", "profile"] })
+);
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { session: false }, googleAuth)
+);

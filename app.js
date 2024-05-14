@@ -4,7 +4,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { router } from "./routes/auth.js";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./swagger.json" assert { type: "json" };
+import fs from "fs";
+
+const swaggerDocument = JSON.parse(fs.readFileSync("./swagger.json", "utf-8"));
 
 dotenv.config();
 
