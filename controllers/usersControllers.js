@@ -146,11 +146,11 @@ export const signOut = async (req, res, next) => {
 export const current = async (req, res, next) => {
   try {
     const { email } = req.user;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select(
+      "_id name dailyWaterNorma avatarURL gender weight activeSportTime"
+    );
     if (!user) throw HttpError(401);
-    res.json({
-      user,
-    });
+    res.json(user);
   } catch (error) {
     next(error);
   }
@@ -199,7 +199,9 @@ export const updateUserInfo = async (req, res, next) => {
 
     const updatedUser = await User.findByIdAndUpdate(user._id, updatedFields, {
       new: true,
-    });
+    }).select(
+      "_id name dailyWaterNorma avatarURL gender weight activeSportTime"
+    );
 
     res.json(updatedUser);
   } catch (error) {
