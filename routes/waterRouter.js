@@ -3,7 +3,8 @@ import {
   createWater,
   updateWater,
   deleteWater,
-  getListMounth,
+  getListMonth,
+  getListDay,
 } from "../controllers/waterControllers.js";
 import validateBody from "../helpers/validateBody.js";
 import { createWaterSchema, updateWaterSchema } from "../models/waterSchema.js";
@@ -29,7 +30,7 @@ waterRouter.patch(
 
 waterRouter.delete("/:id", authenticate, isValidId("id"), deleteWater);
 
-//waterRouter.get("/day", authenticate, getListDay);
-waterRouter.get("/mounth", authenticate, getListMounth);
+waterRouter.get("/day", authenticate, getListDay);
+waterRouter.get("/month", authenticate, getListMonth);
 
 export default waterRouter;

@@ -1,6 +1,7 @@
 import { model, Schema } from "mongoose";
 
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+const timeRegex = /^([01]\d|2[0-3]):?([0-5]\d)$/;
 
 const waterSchema = new Schema(
   {
@@ -12,6 +13,7 @@ const waterSchema = new Schema(
       type: String,
       required: [true, "Enter time please"],
       unique: true,
+      match: timeRegex,
     },
     dateDose: {
       type: String,
