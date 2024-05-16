@@ -2,7 +2,7 @@ import {
   addWater,
   updatesWater,
   removeWater,
-  listMonth,
+  listMounth,
 } from "../services/waterServices.js";
 
 import HttpError from "../helpers/HttpError.js";
@@ -48,9 +48,9 @@ export const deleteWater = async (req, res) => {
   }
 };
 
-export const getListMonth = async (req, res) => {
+export const getListMounth = async (req, res) => {
   try {
-    const result = await listMonth(req);
+    const result = await listMounth(req);
     res.status(200).json(result);
   } catch (error) {
     handleError(error, res);

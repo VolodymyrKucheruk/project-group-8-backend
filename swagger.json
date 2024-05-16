@@ -32,8 +32,6 @@
       "description": "Endpoints related to water consumption"
     }
   ],
-
-
   "paths": {
     "/api/users/signUp": {
       "post": {
@@ -316,8 +314,6 @@
       }
     }
   },
-
-
   "components": {
     "schemas": {
       "SignUpRequest": {

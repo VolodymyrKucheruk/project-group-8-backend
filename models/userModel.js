@@ -25,18 +25,15 @@ const userSchema = new Schema(
     weight: {
       type: Number,
       required: false,
-      default: null,
     },
     gender: {
       type: String,
       enum: ["male", "female"],
       required: false,
-      default: "",
     },
     activeSportTime: {
       type: Number,
       required: false,
-      default: null,
     },
     avatarURL: {
       type: String,

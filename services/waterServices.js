@@ -30,9 +30,9 @@ export async function removeWater(req, id) {
   return removedWater;
 }
 
-// Повертає listMonth
+// Повертає listMounth
 //===========
-export async function listMonth(req) {
+export async function listMounth(req) {
   console.log(req.params);
   const { _id: owner, dailyWaterNorma } = req.user;
   const list = await Water.aggregate([
