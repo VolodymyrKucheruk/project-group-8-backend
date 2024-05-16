@@ -30,13 +30,19 @@ export async function removeWater(req, id) {
   return removedWater;
 }
 
-// Повертає listMounth
-//===========
-export async function listMounth(req) {
-  console.log(req.params);
+// Повертає listMonth
+
+export async function listMonth(req) {
   const { _id: owner, dailyWaterNorma } = req.user;
+
+  const { dateDose } = req.body; // Отримати дату з тіла запиту
+
+  const year = dateDose.substring(0, 4); // Отримати рік з dateDose
+  const month = dateDose.substring(5, 7); // Отримати місяць з dateDose
+
   const list = await Water.aggregate([
-    { $match: { owner } },
+    { $match: { owner, dateDose: { $regex: `^${year}-${month}` } } },
+    // { $match: { owner } },
     { $unset: ["createdAt", "updatedAt"] },
     { $sort: { timeDose: 1 } },
     {
@@ -60,3 +66,28 @@ export async function listMounth(req) {
 
   return dailyList;
 }
+
+export async function listDay(req) {
+  const { _id: owner, dailyWaterNorma } = req.user;
+  const { dateDose } = req.body;
+
+  const list = await Water.aggregate([
+    {
+      $match: { owner, dateDose },
+    },
+    {
+      $group: {
+        _id: null,
+        totalWater: { $sum: "$amountDose" },
+        doses: { $push: { amount: "$amountDose", time: "$timeDose" } },
+      },
+    },
+  ]);
+
+  const { totalWater } = list.length > 0 ? list[0] : { totalWater: 0 };
+
+  const percent = (totalWater / dailyWaterNorma) * 100;
+
+  return { list: list[0]?.doses || [], percent };
+}
+
