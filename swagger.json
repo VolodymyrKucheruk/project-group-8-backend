@@ -33,12 +33,11 @@
     }
   ],
   "paths": {
-    "/api/users/signUp": {
+    "/users/signUp": {
       "post": {
         "tags": ["Users"],
-        "summary": "User registration",
+        "summary": "Register a new user",
         "requestBody": {
-          "description": "Registration data",
           "required": true,
           "content": {
             "application/json": {
@@ -50,7 +49,7 @@
         },
         "responses": {
           "201": {
-            "description": "User registered successfully",
+            "description": "User successfully registered",
             "content": {
               "application/json": {
                 "schema": {
@@ -59,21 +58,20 @@
               }
             }
           },
-          "400": {
-            "description": "Bad request"
-          },
           "409": {
-            "description": "Conflict: Email already exists"
+            "description": "Email already in use"
+          },
+          "500": {
+            "description": "Server error"
           }
         }
       }
     },
-    "/api/users/signIn": {
+    "/users/signIn": {
       "post": {
         "tags": ["Users"],
-        "summary": "User sign-in",
+        "summary": "Sign in with email and password",
         "requestBody": {
-          "description": "Sign-in data",
           "required": true,
           "content": {
             "application/json": {
@@ -85,7 +83,7 @@
         },
         "responses": {
           "200": {
-            "description": "User signed in successfully",
+            "description": "User successfully signed in",
             "content": {
               "application/json": {
                 "schema": {
@@ -95,37 +93,60 @@
             }
           },
           "401": {
-            "description": "Unauthorized: Email or password is wrong"
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
           }
         }
       }
     },
-    "/api/users/signOut": {
+    "/users/signOut": {
       "post": {
         "tags": ["Users"],
-        "summary": "User sign-out",
+        "summary": "Sign out the authenticated user",
         "security": [
           {
-            "Bearer": []
+            "bearerAuth": []
           }
         ],
         "responses": {
           "204": {
-            "description": "User signed out successfully"
+            "description": "User successfully signed out"
           },
           "401": {
-            "description": "Unauthorized: Access token is missing or invalid"
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
           }
         }
       }
     },
-    "/api/users/current": {
+    "/users/current": {
       "get": {
         "tags": ["Users"],
-        "summary": "Get current user information",
+        "summary": "Get current user's information",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              }
+            }
+          }
+        },
         "security": [
           {
-            "Bearer": []
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -140,147 +161,24 @@
             }
           },
           "401": {
-            "description": "Unauthorized: Access token is missing or invalid"
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
           }
         }
       }
     },
-    "/api/users/update": {
+    "/users/updateAvatar": {
       "patch": {
         "tags": ["Users"],
-        "summary": "Update user information",
+        "summary": "Update user's avatar",
         "security": [
           {
-            "Bearer": []
+            "bearerAuth": []
           }
         ],
         "requestBody": {
-          "description": "Update data",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUserInfoRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User information updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UpdateUserInfoResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized: Access token is missing or invalid"
-          },
-          "404": {
-            "description": "User not found"
-          }
-        }
-      }
-    },
-    "/api/users/refresh": {
-      "post": {
-        "tags": ["Users"],
-        "summary": "Refresh access token",
-        "requestBody": {
-          "description": "Refresh token data",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RefreshTokenRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Access token refreshed successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RefreshTokenResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden: Token invalid"
-          }
-        }
-      }
-    },
-    "/api/users/verify/{verificationToken}": {
-      "get": {
-        "tags": ["Users"],
-        "summary": "Verify user email",
-        "parameters": [
-          {
-            "name": "verificationToken",
-            "in": "path",
-            "required": true,
-            "description": "Verification token received in email",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Email verification successful"
-          },
-          "404": {
-            "description": "Not Found: Invalid or expired verification token"
-          },
-          "409": {
-            "description": "Conflict: Email already verified"
-          }
-        }
-      }
-    },
-    "/api/users/verify": {
-      "post": {
-        "tags": ["Users"],
-        "summary": "Resend verification email",
-        "requestBody": {
-          "description": "Resend verification email data",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ResendVerificationEmailRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Verification email sent successfully"
-          },
-          "400": {
-            "description": "Bad request: Missing required field email or Verification has already been passed"
-          }
-        }
-      }
-    },
-    "/api/users/avatars": {
-      "patch": {
-        "tags": ["Users"],
-        "summary": "Update user avatar",
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "requestBody": {
-          "description": "Avatar image data",
           "required": true,
           "content": {
             "multipart/form-data": {
@@ -298,17 +196,402 @@
         },
         "responses": {
           "200": {
-            "description": "User avatar updated successfully",
+            "description": "User's avatar updated successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UpdateAvatarResponse"
+                  "type": "object",
+                  "properties": {
+                    "avatarURL": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
                 }
               }
             }
           },
           "401": {
-            "description": "Unauthorized: Access token is missing or invalid"
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/users/verify/{verificationToken}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Verify user's email",
+        "parameters": [
+          {
+            "name": "verificationToken",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email verification successful"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Invalid or expired verification token"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/users/resendVerifyEmail": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Resend verification email",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendVerifyEmailRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verification email resent successfully"
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/users/refresh": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Refresh access token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Access token refreshed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/users/update": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update user information",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserInfoRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User information updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/users/google": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Authenticate via Google",
+        "responses": {
+          "302": {
+            "description": "Redirect to Google authentication page"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/users/google/callback": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Google authentication callback",
+        "responses": {
+          "302": {
+            "description": "Redirect back to the application"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/waters": {
+      "post": {
+        "tags": ["Water"],
+        "summary": "Add water intake",
+        "description": "Adds a new water intake record for the authenticated user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWaterRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Water intake added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WaterResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/waters/{id}": {
+      "patch": {
+        "tags": ["Water"],
+        "summary": "Update water intake",
+        "description": "Updates an existing water intake record for the authenticated user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the water intake record to update",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWaterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Water intake updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WaterResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Water"],
+        "summary": "Delete water intake",
+        "description": "Deletes an existing water intake record for the authenticated user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the water intake record to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Water intake deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WaterResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/waters/day": {
+      "get": {
+        "tags": ["Water"],
+        "summary": "Get water intake for a day",
+        "description": "Gets the water intake records for the authenticated user for a specific day",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Water intake retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetWaterDayResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/waters/month": {
+      "get": {
+        "tags": ["Water"],
+        "summary": "Get water intake for a month",
+        "description": "Gets the aggregated water intake records for the authenticated user for a specific month",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Water intake retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetWaterMonthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
           }
         }
       }
@@ -321,219 +604,321 @@
         "properties": {
           "email": {
             "type": "string",
-            "format": "email",
-            "description": "User's email"
+            "format": "email"
           },
           "password": {
-            "type": "string",
-            "description": "User's password"
+            "type": "string"
           }
-        }
+        },
+        "required": ["email", "password"]
       },
       "SignUpResponse": {
         "type": "object",
         "properties": {
           "email": {
             "type": "string",
-            "format": "email",
-            "description": "User's email"
+            "format": "email"
           },
-          "userId": {
+          "water": {
+            "type": "number"
+          },
+          "avatarURL": {
             "type": "string",
-            "description": "User's id"
+            "format": "uri"
           }
-        }
+        },
+        "required": ["email", "water", "avatarURL"]
       },
       "SignInRequest": {
         "type": "object",
         "properties": {
           "email": {
             "type": "string",
-            "format": "email",
-            "description": "User's email"
+            "format": "email"
           },
           "password": {
-            "type": "string",
-            "description": "User's password"
+            "type": "string"
           }
-        }
+        },
+        "required": ["email", "password"]
       },
       "SignInResponse": {
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "description": "User's name"
+            "type": "string"
           },
           "email": {
             "type": "string",
-            "format": "email",
-            "description": "User's email"
+            "format": "email"
           },
           "avatar": {
             "type": "string",
-            "format": "uri",
-            "description": "URL of user's avatar"
+            "format": "uri"
           },
           "water": {
-            "type": "number",
-            "description": "User's daily water consumption norm"
+            "type": "number"
           },
           "accessToken": {
-            "type": "string",
-            "description": "Access token for authorization"
+            "type": "string"
           },
           "refreshToken": {
-            "type": "string",
-            "description": "Refresh token for authorization"
+            "type": "string"
           }
-        }
+        },
+        "required": [
+          "name",
+          "email",
+          "avatar",
+          "water",
+          "accessToken",
+          "refreshToken"
+        ]
+      },
+      "ResendVerifyEmailRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": ["email"]
       },
       "RefreshTokenRequest": {
         "type": "object",
         "properties": {
           "refreshToken": {
-            "type": "string",
-            "description": "User's refresh token"
+            "type": "string"
           }
-        }
+        },
+        "required": ["refreshToken"]
       },
       "RefreshTokenResponse": {
         "type": "object",
         "properties": {
           "accessToken": {
-            "type": "string",
-            "description": "New access token"
+            "type": "string"
           },
           "refreshToken": {
-            "type": "string",
-            "description": "New refresh token"
+            "type": "string"
           }
-        }
-      },
-      "CurrentUserResponse": {
-        "type": "object",
-        "properties": {
-          "user": {
-            "type": "object",
-            "description": "Current user information",
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "User's name"
-              },
-              "email": {
-                "type": "string",
-                "format": "email",
-                "description": "User's email"
-              },
-              "avatarURL": {
-                "type": "string",
-                "format": "uri",
-                "description": "URL of user's avatar"
-              },
-              "dailyWaterNorma": {
-                "type": "number",
-                "description": "User's daily water consumption norm"
-              }
-            }
-          }
-        }
+        },
+        "required": ["accessToken", "refreshToken"]
       },
       "UpdateUserInfoRequest": {
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "description": "User's updated name"
+            "type": "string"
           },
           "email": {
             "type": "string",
-            "format": "email",
-            "description": "User's updated email"
+            "format": "email"
           },
           "gender": {
             "type": "string",
-            "enum": ["male", "female"],
-            "description": "User's updated gender"
+            "enum": ["male", "female"]
           },
           "weight": {
-            "type": "number",
-            "description": "User's updated weight"
+            "type": "number"
           },
           "activeSportTime": {
-            "type": "number",
-            "description": "User's updated active sport time"
+            "type": "number"
           },
           "dailyWaterNorma": {
-            "type": "number",
-            "description": "User's updated daily water consumption norm"
+            "type": "number"
           },
           "avatarURL": {
             "type": "string",
-            "format": "uri",
-            "description": "User's updated avatar URL"
+            "format": "uri"
           }
         }
       },
-      "UpdateUserInfoResponse": {
+      "TokenRequest": {
         "type": "object",
         "properties": {
+          "token": {
+            "type": "string",
+            "description": "User's authentication token"
+          }
+        },
+        "required": ["token"]
+      },
+      "CurrentUserResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
           "name": {
-            "type": "string",
-            "description": "User's updated name"
+            "type": "string"
           },
-          "email": {
+          "dailyWaterNorma": {
+            "type": "number"
+          },
+          "avatarURL": {
             "type": "string",
-            "format": "email",
-            "description": "User's updated email"
+            "format": "uri"
           },
           "gender": {
             "type": "string",
-            "description": "User's updated gender"
+            "enum": ["male", "female"]
           },
           "weight": {
-            "type": "number",
-            "description": "User's updated weight"
+            "type": "number"
           },
           "activeSportTime": {
-            "type": "number",
-            "description": "User's updated active sport time"
-          },
-          "dailyWaterNorma": {
-            "type": "number",
-            "description": "User's updated daily water consumption norm"
-          },
-          "avatarURL": {
-            "type": "string",
-            "format": "uri",
-            "description": "User's updated avatar URL"
+            "type": "number"
           }
         }
       },
-      "ResendVerificationEmailRequest": {
+      "Error": {
         "type": "object",
         "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "description": "User's email for resending verification email"
+          "message": {
+            "type": "string"
           }
         }
       },
-      "UpdateAvatarResponse": {
+      "CreateWaterRequest": {
         "type": "object",
         "properties": {
-          "avatarURL": {
+          "amountDose": {
+            "type": "number"
+          },
+          "timeDose": {
             "type": "string",
-            "format": "uri",
-            "description": "URL of updated avatar"
+            "format": "time"
+          },
+          "dateDose": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": ["amountDose", "timeDose"]
+      },
+      "UpdateWaterRequest": {
+        "type": "object",
+        "properties": {
+          "amountDose": {
+            "type": "number"
+          },
+          "timeDose": {
+            "type": "string",
+            "format": "time"
+          },
+          "dateDose": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "WaterResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "amountDose": {
+            "type": "number"
+          },
+          "timeDose": {
+            "type": "string",
+            "format": "time"
+          },
+          "dateDose": {
+            "type": "string",
+            "format": "date"
+          },
+          "owner": {
+            "type": "string"
+          }
+        }
+      },
+      "GetWaterDayResponse": {
+        "type": "object",
+        "properties": {
+          "list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WaterResponse"
+            }
+          },
+          "percent": {
+            "type": "number"
+          }
+        }
+      },
+      "GetWaterMonthResponse": {
+        "type": "object",
+        "properties": {
+          "dailyList": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "totalAmount": {
+                  "type": "number"
+                },
+                "percentage": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
     },
     "securitySchemes": {
-      "Bearer": {
+      "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
