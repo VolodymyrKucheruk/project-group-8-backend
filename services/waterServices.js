@@ -3,7 +3,6 @@ import { Water } from "../models/waterModel.js";
 //Додає новий об'єкт колекції waters авторизованим користувачем
 export async function addWater(...data) {
   const newWater = new Water(...data);
-  console.log(newWater);
   await newWater.save();
   return newWater;
 }
@@ -90,4 +89,3 @@ export async function listDay(req) {
 
   return { list: list[0]?.doses || [], percent };
 }
-

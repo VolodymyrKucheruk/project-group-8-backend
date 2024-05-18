@@ -14,7 +14,7 @@ import { authenticate } from "../helpers/authenticate.js";
 const waterRouter = express.Router();
 
 waterRouter.post(
-  "/",
+  "/add",
   authenticate,
   validateBody(createWaterSchema),
   createWater
