@@ -400,7 +400,7 @@
         }
       }
     },
-    "/waters": {
+    "/waters/add": {
       "post": {
         "tags": ["Water"],
         "summary": "Add water intake",
