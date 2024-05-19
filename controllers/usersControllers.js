@@ -36,7 +36,7 @@ export const signUp = async (req, res, next) => {
     cloudinaryAvatarURL = cloudinaryResponse.secure_url;
 
     const verificationToken = v4();
-    const dailyWaterNorma = 1.5;
+    const dailyWaterNorma = 1.500;
     const newUser = await User.create({
       name: name,
       email: email,
