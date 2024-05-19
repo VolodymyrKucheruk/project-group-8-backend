@@ -24,7 +24,6 @@ export const signUp = async (req, res, next) => {
 
     const atIndex = email.indexOf("@");
     const name = email.substring(0, atIndex);
-
     const user = await User.findOne({ email });
 
     if (user) throw HttpError(409, "Email already in use");
@@ -37,7 +36,7 @@ export const signUp = async (req, res, next) => {
     cloudinaryAvatarURL = cloudinaryResponse.secure_url;
 
     const verificationToken = v4();
-    const dailyWaterNorma = 1.500;
+    const dailyWaterNorma = 1.5;
     const newUser = await User.create({
       name: name,
       email: email,
@@ -137,7 +136,7 @@ export const signOut = async (req, res, next) => {
     });
     if (!user) throw HttpError(401);
 
-    throw HttpError(204);
+    throw HttpError(204, "signOUt success");
   } catch (error) {
     next(error);
   }
