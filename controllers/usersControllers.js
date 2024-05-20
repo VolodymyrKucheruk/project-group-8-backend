@@ -45,6 +45,21 @@ export const signUp = async (req, res, next) => {
       dailyWaterNorma,
       verificationToken,
     });
+
+    const payload = {
+      id: newUser._id,
+      dailyWaterNorma: newUser.dailyWaterNorma,
+    };
+
+    const accessToken = jwt.sign(payload, ACCESS_SECRET_KEY, {
+      expiresIn: "7d",
+    });
+    const refreshToken = jwt.sign(payload, REFRESH_SECRET_KEY, {
+      expiresIn: "10d",
+    });
+
+    await User.findByIdAndUpdate(newUser._id, { accessToken, refreshToken });
+
     const verifyEmail = {
       from: MAILTRAP_USER,
       to: email,
@@ -57,6 +72,8 @@ export const signUp = async (req, res, next) => {
       email: newUser.email,
       water: dailyWaterNorma,
       avatarURL: cloudinaryAvatarURL,
+      accessToken,
+      refreshToken,
     });
   } catch (error) {
     next(error);
@@ -254,6 +271,7 @@ export const resendVerifyEmail = async (req, res, next) => {
     next(error);
   }
 };
+
 export const googleAuth = async (req, res) => {
   const { _id: id } = req.user;
   const payload = {
