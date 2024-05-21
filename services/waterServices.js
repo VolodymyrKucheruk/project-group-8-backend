@@ -1,13 +1,11 @@
 import { Water } from "../models/waterModel.js";
 
-//Додає новий об'єкт колекції waters авторизованим користувачем
 export async function addWater(...data) {
   const newWater = new Water(...data);
   await newWater.save();
   return newWater;
 }
 
-//Оновлення об'єкту колекції waters авторизованим користувачем
 export async function updatesWater(req, id, body) {
   const { _id: owner } = req.user;
   const updatedWater = await Water.findOneAndUpdate({ _id: id, owner }, body, {
@@ -16,7 +14,6 @@ export async function updatesWater(req, id, body) {
   return updatedWater;
 }
 
-//видалення об'єкту колекції waters авторизованим користувачем
 export async function removeWater(req, id) {
   const { _id: owner } = req.user;
   const removedWater = await Water.findOneAndDelete({
@@ -29,19 +26,15 @@ export async function removeWater(req, id) {
   return removedWater;
 }
 
-// Повертає listMonth
-
 export async function listMonth(req) {
   const { _id: owner, dailyWaterNorma } = req.user;
 
-  const { dateDose } = req.body; // Отримати дату з тіла запиту
-
-  const year = dateDose.substring(0, 4); // Отримати рік з dateDose
-  const month = dateDose.substring(5, 7); // Отримати місяць з dateDose
+  const { dateDose } = req.body;
+  const year = dateDose.substring(0, 4);
+  const month = dateDose.substring(5, 7);
 
   const list = await Water.aggregate([
     { $match: { owner, dateDose: { $regex: `^${year}-${month}` } } },
-    // { $match: { owner } },
     { $unset: ["createdAt", "updatedAt"] },
     { $sort: { timeDose: 1 } },
     {
@@ -57,12 +50,10 @@ export async function listMonth(req) {
     const date = item._id;
     const totalAmount = item.totalAmount;
 
-    // Обчислення відсотка спожитої води від денної норми та округлення до цілого числа
     const percentage = Math.round((totalAmount / dailyWaterNorma) * 100);
 
     dailyList[date] = { totalAmount, percentage };
   });
-
   return dailyList;
 }
 
