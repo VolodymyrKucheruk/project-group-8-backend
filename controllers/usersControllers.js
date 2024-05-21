@@ -133,11 +133,6 @@ export const refresh = async (req, res, next) => {
       expiresIn: "10d",
     });
 
-    await User.findByIdAndUpdate(user._id, {
-      accessToken,
-      refreshToken: newRefreshToken,
-    });
-
     res.json({ accessToken, refreshToken: newRefreshToken });
   } catch (error) {
     next(error);
