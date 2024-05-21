@@ -165,7 +165,6 @@ export const current = async (req, res, next) => {
     const user = await User.findOne({ email }).select(
       "_id name dailyWaterNorma avatarURL gender weight activeSportTime"
     );
-    if (!user) throw HttpError(401);
     res.json(user);
   } catch (error) {
     next(error);

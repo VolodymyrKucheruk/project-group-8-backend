@@ -3,7 +3,7 @@ import morgan from "morgan";
 import cors from "cors";
 import waterRouter from "./routes/waterRouter.js";
 import dotenv from "dotenv";
-import { router } from "./routes/auth.js";
+import { userRouter } from "./routes/auth.js";
 import swaggerUi from "swagger-ui-express";
 import fs from "fs";
 
@@ -17,7 +17,7 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
-app.use("/api/users", router);
+app.use("/api/users", userRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/waters", waterRouter);
 

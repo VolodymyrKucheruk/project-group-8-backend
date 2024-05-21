@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
+import { emailRegexp } from "./regex.js"
 
-const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const userSchema = new Schema(
   {
@@ -20,7 +20,7 @@ const userSchema = new Schema(
     },
     dailyWaterNorma: {
       type: Number,
-      default: null,
+      default: 1500,
     },
     weight: {
       type: Number,

@@ -33,7 +33,7 @@
     }
   ],
   "paths": {
-    "/users/signUp": {
+    "api/users/signUp": {
       "post": {
         "tags": ["Users"],
         "summary": "Register a new user",
@@ -67,7 +67,7 @@
         }
       }
     },
-    "/users/signIn": {
+    "api/users/signIn": {
       "post": {
         "tags": ["Users"],
         "summary": "Sign in with email and password",
@@ -108,7 +108,7 @@
         }
       }
     },
-    "/users/signOut": {
+    "api/users/signOut": {
       "post": {
         "tags": ["Users"],
         "summary": "Sign out the authenticated user",
@@ -130,7 +130,7 @@
         }
       }
     },
-    "/users/current": {
+    "api/users/current": {
       "get": {
         "tags": ["Users"],
         "summary": "Get current user's information",
@@ -169,7 +169,7 @@
         }
       }
     },
-    "/users/updateAvatar": {
+    "api/users/updateAvatar": {
       "patch": {
         "tags": ["Users"],
         "summary": "Update user's avatar",
@@ -220,7 +220,7 @@
         }
       }
     },
-    "/users/verify/{verificationToken}": {
+    "api/users/verify/{verificationToken}": {
       "get": {
         "tags": ["Users"],
         "summary": "Verify user's email",
@@ -255,7 +255,7 @@
         }
       }
     },
-    "/users/resendVerifyEmail": {
+    "api/users/resendVerifyEmail": {
       "post": {
         "tags": ["Users"],
         "summary": "Resend verification email",
@@ -294,7 +294,7 @@
         }
       }
     },
-    "/users/refresh": {
+    "api/users/refresh": {
       "post": {
         "tags": ["Users"],
         "summary": "Refresh access token",
@@ -333,7 +333,7 @@
         }
       }
     },
-    "/users/update": {
+    "api/users/update": {
       "patch": {
         "tags": ["Users"],
         "summary": "Update user information",
@@ -372,7 +372,7 @@
         }
       }
     },
-    "/users/google": {
+    "api/users/google": {
       "get": {
         "tags": ["Users"],
         "summary": "Authenticate via Google",
@@ -386,7 +386,7 @@
         }
       }
     },
-    "/users/google/callback": {
+    "api/users/google/callback": {
       "get": {
         "tags": ["Users"],
         "summary": "Google authentication callback",
@@ -400,7 +400,7 @@
         }
       }
     },
-    "/waters/add": {
+    "api/waters/add": {
       "post": {
         "tags": ["Water"],
         "summary": "Add water intake",
@@ -440,7 +440,7 @@
         }
       }
     },
-    "/waters/{id}": {
+    "api/waters/{id}": {
       "patch": {
         "tags": ["Water"],
         "summary": "Update water intake",
@@ -536,7 +536,7 @@
         }
       }
     },
-    "/waters/day": {
+    "api/waters/day": {
       "get": {
         "tags": ["Water"],
         "summary": "Get water intake for a day",
@@ -566,7 +566,7 @@
         }
       }
     },
-    "/waters/month": {
+    "api/waters/month": {
       "get": {
         "tags": ["Water"],
         "summary": "Get water intake for a month",
@@ -607,7 +607,8 @@
             "format": "email"
           },
           "password": {
-            "type": "string"
+            "type": "string",
+            "example": "Qwerty123456"
           }
         },
         "required": ["email", "password"]
@@ -625,6 +626,14 @@
           "avatarURL": {
             "type": "string",
             "format": "uri"
+          },
+          "accessToken": {
+            "type": "string",
+            "example": "sonvoiwh22489u24hkhnivu4889..."
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": "sonvoiwh22489u24hkhnivu4889..."
           }
         },
         "required": ["email", "water", "avatarURL"]

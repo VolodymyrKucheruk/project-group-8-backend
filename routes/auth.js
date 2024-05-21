@@ -23,27 +23,34 @@ import {
 } from "../controllers/usersControllers.js";
 import passport from "../helpers/google-authenticate.js";
 
-export const router = express.Router();
+export const userRouter = express.Router();
 
-router.get("/current", authenticate, current);
-router.post("/signUp", validateBody(signUpSchema), signUp);
-router.get("/verify/:verificationToken", verifyEmail);
-router.post("/verify", validateBody(emailSchema), resendVerifyEmail);
-router.post("/signIn", validateBody(signInSchema), signIn);
-router.post("/signOut", authenticate, signOut);
-router.patch("/avatars", authenticate, upload.single("avatar"), updateAvatar);
-router.post("/refresh", validateBody(refreshSchema), refresh);
-router.patch(
+
+userRouter.get("/current", authenticate, current);
+userRouter.post("/signUp", validateBody(signUpSchema), signUp);
+userRouter.get("/verify/:verificationToken", verifyEmail);
+userRouter.post("/verify", validateBody(emailSchema), resendVerifyEmail);
+userRouter.post("/signIn", validateBody(signInSchema), signIn);
+userRouter.post("/signOut", authenticate, signOut);
+userRouter.patch(
+  "/avatars",
+  authenticate,
+  upload.single("avatar"),
+  updateAvatar
+);
+userRouter.post("/refresh", validateBody(refreshSchema), refresh);
+userRouter.patch(
   "/update",
   authenticate,
+  upload.single('avatar'),
   validateBody(updateUserInfoSchema),
   updateUserInfo
 );
-router.get(
+userRouter.get(
   "/google",
   passport.authenticate("google", { scope: ["email", "profile"] })
 );
-router.get(
+userRouter.get(
   "/google/callback",
   passport.authenticate("google", { session: false }),
   googleAuth
