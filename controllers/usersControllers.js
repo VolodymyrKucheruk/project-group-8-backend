@@ -115,6 +115,7 @@ export const signIn = async (req, res, next) => {
     next(error);
   }
 };
+
 export const refresh = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
@@ -131,6 +132,11 @@ export const refresh = async (req, res, next) => {
     });
     const newRefreshToken = jwt.sign(payload, REFRESH_SECRET_KEY, {
       expiresIn: "10d",
+    });
+
+    await User.findByIdAndUpdate(user._id, {
+      accessToken,
+      refreshToken: newRefreshToken,
     });
 
     res.json({ accessToken, refreshToken: newRefreshToken });

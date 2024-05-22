@@ -4,7 +4,9 @@ import {
   updateWater,
   deleteWater,
   getListMonth,
+  getListMonthByDay,
   getListDay,
+  getListDate,
 } from "../controllers/waterControllers.js";
 import validateBody from "../helpers/validateBody.js";
 import { createWaterSchema, updateWaterSchema } from "../models/waterSchema.js";
@@ -31,6 +33,9 @@ waterRouter.patch(
 waterRouter.delete("/:id", authenticate, isValidId("id"), deleteWater);
 
 waterRouter.get("/day", authenticate, getListDay);
+waterRouter.get("/:date", authenticate, getListDate);
+
 waterRouter.get("/month", authenticate, getListMonth);
+waterRouter.get("/:month", authenticate, getListMonthByDay);
 
 export default waterRouter;
