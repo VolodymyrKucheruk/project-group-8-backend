@@ -38,10 +38,10 @@ export const updateWater = async (req, res) => {
 };
 
 export const deleteWater = async (req, res) => {
-  const { _id } = req.params;
+  const { id } = req.params;
 
   try {
-    const removedWater = await removeWater(req, _id);
+    const removedWater = await removeWater(req, id);
     if (!removedWater) {
       throw HttpError(404);
     }
