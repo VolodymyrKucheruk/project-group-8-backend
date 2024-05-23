@@ -115,7 +115,6 @@ export const signIn = async (req, res, next) => {
     next(error);
   }
 };
-
 export const refresh = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
