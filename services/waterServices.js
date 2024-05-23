@@ -18,18 +18,24 @@ export async function updatesWater(req, id, body) {
   });
   return updatedWater;
 }
-
+//==========
 export async function removeWater(req, id) {
   const { _id: owner } = req.user;
+
   const removedWater = await Water.findOneAndDelete({
     _id: id,
     owner,
   });
+
   if (!removedWater) {
     return null;
   }
-  return removedWater;
+
+  const updatedWaterArray = await Water.find({ owner });
+
+  return updatedWaterArray;
 }
+
 //=======
 //стара відповідь за місяць
 //{ "2024-05-21": { "totalAmount": 14352, "percentage": 957 }, "2024-05-20": { "totalAmount": 900, "percentage": 60 }, "2024-05-22": { "totalAmount": 2050, "percentage": 137 } }
