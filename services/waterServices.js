@@ -18,7 +18,7 @@ export async function updatesWater(req, id, body) {
   });
   return updatedWater;
 }
-
+//==========
 export async function removeWater(req, id) {
   const { _id: owner } = req.user;
 
@@ -66,7 +66,7 @@ export async function listMonthByDay(req) {
   return monthlyList;
 }
 
-//відповідь масив за день [{"timeDose":"23:01","amountDose":500,"percentage":33},{"timeDose":"23:55","amountDose":400,"percentage":27}]
+
 export async function listDay(req) {
   const { _id: owner, dailyWaterNorma } = req.user;
   const { dateDose } = req.body;
@@ -83,7 +83,6 @@ export async function listDay(req) {
   return dailyList;
 }
 
-//відповідь за датою з фронтенду [{"timeDose":"23:01","amountDose":500,"percentage":33},{"timeDose":"23:55","amountDose":400,"percentage":27}]
 export async function listDate(req) {
   const { _id: owner, dailyWaterNorma } = req.user;
   const date = req.params.date;
