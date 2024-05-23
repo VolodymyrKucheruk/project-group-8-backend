@@ -3,7 +3,6 @@ import {
   createWater,
   updateWater,
   deleteWater,
-  getListMonth,
   getListMonthByDay,
   getListDay,
   getListDate,
@@ -35,7 +34,6 @@ waterRouter.delete("/:id", authenticate, isValidId("id"), deleteWater);
 waterRouter.get("/day", authenticate, getListDay);
 waterRouter.get("/:date", authenticate, getListDate);
 
-waterRouter.get("/month", authenticate, getListMonth);
-waterRouter.get("/:month", authenticate, getListMonthByDay);
+waterRouter.get("/monthly/:date", authenticate, getListMonthByDay);
 
 export default waterRouter;

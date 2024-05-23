@@ -2,7 +2,7 @@ import {
   addWater,
   updatesWater,
   removeWater,
-  listMonth,
+  listMonthByDay,
   listDay,
   listDate,
 } from "../services/waterServices.js";
@@ -39,7 +39,7 @@ export const updateWater = async (req, res) => {
 
 export const deleteWater = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
+
   try {
     const removedWater = await removeWater(req, id);
     if (!removedWater) {
@@ -51,15 +51,6 @@ export const deleteWater = async (req, res) => {
   }
 };
 
-export const getListMonth = async (req, res) => {
-  try {
-    const result = await listMonth(req);
-    res.status(200).json(result);
-  } catch (error) {
-    handleError(error, res);
-  }
-};
-//========
 export const getListMonthByDay = async (req, res) => {
   try {
     const result = await listMonthByDay(req);
@@ -77,7 +68,7 @@ export const getListDay = async (req, res) => {
     handleError(error, res);
   }
 };
-//========
+
 export const getListDate = async (req, res) => {
   try {
     const result = await listDate(req);
@@ -86,7 +77,6 @@ export const getListDate = async (req, res) => {
     handleError(error, res);
   }
 };
-//========
 
 const handleError = (error, res) => {
   const status = error.status || 500;
