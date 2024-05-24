@@ -1,8 +1,8 @@
 import { Water } from "../models/waterModel.js";
 import mongoose from "mongoose";
 
-export async function addWater(data, owner) {
-  const newWater = new Water({ ...data, owner });
+export async function addWater(data) {
+  const newWater = new Water({ ...data });
   await newWater.save();
 
   const ObjectId = mongoose.Types.ObjectId;
