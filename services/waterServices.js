@@ -1,8 +1,8 @@
 import { Water } from "../models/waterModel.js";
 import mongoose from "mongoose";
 
-export async function addWater(...data) {
-  const newWater = new Water(...data);
+export async function addWater(data, owner) {
+  const newWater = new Water({ ...data, owner });
   await newWater.save();
 
   const ObjectId = mongoose.Types.ObjectId;
@@ -65,7 +65,6 @@ export async function listMonthByDay(req) {
 
   return monthlyList;
 }
-
 
 export async function listDay(req) {
   const { _id: owner, dailyWaterNorma } = req.user;
