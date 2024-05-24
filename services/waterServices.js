@@ -89,10 +89,10 @@ export async function listDate(req) {
   const list = await Water.find({ owner, dateDose: date });
 
   const dailyList = list.map((item) => {
-    const { timeDose, amountDose } = item;
+    const { _id, timeDose, amountDose } = item;
     const percentage = Math.round((amountDose / dailyWaterNorma) * 100);
 
-    return { timeDose, amountDose, percentage };
+    return { _id, timeDose, amountDose, percentage };
   });
 
   return dailyList;
