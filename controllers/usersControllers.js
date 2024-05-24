@@ -135,10 +135,10 @@ export const refresh = async (req, res, next) => {
 
     await User.findByIdAndUpdate(user._id, {
       accessToken,
-      token: newRefreshToken,
+      newRefreshToken,
     });
 
-    res.json({ accessToken, token: newRefreshToken });
+    res.json({ accessToken, newRefreshToken });
   } catch (error) {
     next(error);
   }
