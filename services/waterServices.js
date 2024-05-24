@@ -39,7 +39,7 @@ export async function removeWater(req, id) {
 export async function listMonthByDay(req) {
   const { _id: owner, dailyWaterNorma } = req.user;
   const { date } = req.params;
-  console.log(req.params);
+
   const year = date.substring(0, 4);
   const month = date.substring(5, 7);
 
