@@ -39,7 +39,7 @@ export async function removeWater(req, id) {
 export async function listMonthByDay(req) {
   const { _id: owner, dailyWaterNorma } = req.user;
   const { date } = req.params;
-  console.log(req.params);
+
   const year = date.substring(0, 4);
   const month = date.substring(5, 7);
 
@@ -89,10 +89,10 @@ export async function listDate(req) {
   const list = await Water.find({ owner, dateDose: date });
 
   const dailyList = list.map((item) => {
-    const { timeDose, amountDose } = item;
+    const { _id, timeDose, amountDose } = item;
     const percentage = Math.round((amountDose / dailyWaterNorma) * 100);
 
-    return { timeDose, amountDose, percentage };
+    return { _id, timeDose, amountDose, percentage };
   });
 
   return dailyList;
