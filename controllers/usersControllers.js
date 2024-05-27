@@ -118,26 +118,23 @@ export const signIn = async (req, res, next) => {
 export const refresh = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
-    const { _id } = jwt.verify(refreshToken, REFRESH_SECRET_KEY);
-    const user = await User.findOne({ refreshToken });
+    const decodedRefreshToken = jwt.verify(refreshToken, REFRESH_SECRET_KEY);
+    const { id } = decodedRefreshToken;
+    const user = await User.findOne({ _id: id });
 
-    if (!user) {
+    if (!user || user.refreshToken !== refreshToken) {
       throw HttpError(403, "Token invalid");
     }
-
-    const payload = { _id };
+    const payload = { id };
     const accessToken = jwt.sign(payload, ACCESS_SECRET_KEY, {
       expiresIn: "7d",
     });
     const newRefreshToken = jwt.sign(payload, REFRESH_SECRET_KEY, {
       expiresIn: "10d",
     });
-
-    await User.findByIdAndUpdate(user._id, {
-      accessToken,
-      newRefreshToken,
-    });
-
+    user.accessToken = accessToken;
+    user.refreshToken = newRefreshToken;
+    await user.save();
     res.json({ accessToken, newRefreshToken });
   } catch (error) {
     next(error);
@@ -165,7 +162,7 @@ export const current = async (req, res, next) => {
     const user = await User.findOne({ email }).select(
       "_id name dailyWaterNorma avatarURL gender weight activeSportTime"
     );
-    
+
     res.json(user);
   } catch (error) {
     next(error);
