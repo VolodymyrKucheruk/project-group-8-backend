@@ -160,7 +160,7 @@ export const current = async (req, res, next) => {
   try {
     const { email } = req.user;
     const user = await User.findOne({ email }).select(
-      "_id name dailyWaterNorma avatarURL gender weight activeSportTime"
+      "_id name dailyWaterNorma avatarURL gender weight activeSportTime email"
     );
 
     res.json(user);
@@ -168,6 +168,7 @@ export const current = async (req, res, next) => {
     next(error);
   }
 };
+
 
 export const updateAvatar = async (req, res, next) => {
   try {
