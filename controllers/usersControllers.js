@@ -108,6 +108,7 @@ export const signIn = async (req, res, next) => {
       email: user.email,
       avatar: user.avatarURL,
       water: user.dailyWaterNorma,
+      gender: user.gender,
       accessToken,
       refreshToken,
     });

@@ -31,7 +31,7 @@ const userSchema = new Schema(
       type: String,
       enum: ["man", "woman"],
       required: false,
-      default: "",
+      default: null,
     },
     activeSportTime: {
       type: Number,
