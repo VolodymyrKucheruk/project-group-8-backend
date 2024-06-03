@@ -189,36 +189,36 @@ export const updateAvatar = async (req, res, next) => {
 
 export const updateUserInfo = async (req, res, next) => {
   try {
-    const { user } = req;
     const { name, email, gender, weight, activeSportTime, dailyWaterNorma } =
       req.body;
-
-    let avatarURL = user.avatarURL;
+    let avatarURL = req.user.avatarURL;
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path);
       avatarURL = result.secure_url;
     }
-
     const updatedFields = {
-      name: name || user.name,
-      email: email || user.email,
-      gender: gender || user.gender,
-      weight: weight || user.weight,
-      activeSportTime: activeSportTime || user.activeSportTime,
-      dailyWaterNorma: dailyWaterNorma || user.dailyWaterNorma,
+      name: name || req.user.name,
+      email: email || req.user.email,
+      weight: weight || req.user.weight,
+      activeSportTime: activeSportTime || req.user.activeSportTime,
+      dailyWaterNorma: dailyWaterNorma || req.user.dailyWaterNorma,
       avatarURL,
     };
-
-    const updatedUser = await User.findByIdAndUpdate(user.id, updatedFields, {
-      new: true,
-    }).select(
+    if (gender !== undefined && gender !== "") {
+      updatedFields.gender = gender;
+    }
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      updatedFields,
+      {
+        new: true,
+      }
+    ).select(
       "_id name dailyWaterNorma avatarURL gender weight activeSportTime email"
     );
-
     if (!updatedUser) {
       return next(new HttpError(404, "User not found"));
     }
-
     res.json(updatedUser);
   } catch (error) {
     next(new HttpError(500, "Internal Server Error"));
