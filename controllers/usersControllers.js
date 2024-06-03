@@ -169,7 +169,6 @@ export const current = async (req, res, next) => {
   }
 };
 
-
 export const updateAvatar = async (req, res, next) => {
   try {
     if (!req.user) {
@@ -191,15 +190,14 @@ export const updateAvatar = async (req, res, next) => {
 export const updateUserInfo = async (req, res, next) => {
   try {
     const { user } = req;
-    const {
-      name,
-      email,
-      gender,
-      weight,
-      activeSportTime,
-      dailyWaterNorma,
-      avatarURL,
-    } = req.body;
+    const { name, email, gender, weight, activeSportTime, dailyWaterNorma } =
+      req.body;
+
+    let avatarURL = user.avatarURL;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      avatarURL = result.secure_url;
+    }
 
     const updatedFields = {
       name: name || user.name,
@@ -208,18 +206,22 @@ export const updateUserInfo = async (req, res, next) => {
       weight: weight || user.weight,
       activeSportTime: activeSportTime || user.activeSportTime,
       dailyWaterNorma: dailyWaterNorma || user.dailyWaterNorma,
-      avatarURL: avatarURL || user.avatarURL,
+      avatarURL,
     };
 
-    const updatedUser = await User.findByIdAndUpdate(user._id, updatedFields, {
+    const updatedUser = await User.findByIdAndUpdate(user.id, updatedFields, {
       new: true,
     }).select(
-      "_id name dailyWaterNorma avatarURL gender weight activeSportTime"
+      "_id name dailyWaterNorma avatarURL gender weight activeSportTime email"
     );
+
+    if (!updatedUser) {
+      return next(new HttpError(404, "User not found"));
+    }
 
     res.json(updatedUser);
   } catch (error) {
-    next(error);
+    next(new HttpError(500, "Internal Server Error"));
   }
 };
 

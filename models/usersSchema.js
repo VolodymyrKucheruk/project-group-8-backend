@@ -30,8 +30,9 @@ export const updateUserInfoSchema = Joi.object({
   email: Joi.string().pattern(emailRegexp).messages({
     "string.pattern.base": "Email must be a valid email address",
   }),
-  gender: Joi.string().valid("male", "female"),
+  gender: Joi.string().valid("man", "woman"),
   weight: Joi.number().min(0),
   activeSportTime: Joi.number().min(0),
   dailyWaterNorma: Joi.number().min(0),
+  avatar: Joi.any(),
 });
